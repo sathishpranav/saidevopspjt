@@ -1,17 +1,8 @@
 pipeline {
     agent any
-    
-    triggers {
-        // This tells Jenkins to listen for the GitHub Webhook trigger
-        githubPush()
-    }
-
-    stages {
-        stage('Checkpipeline {
-    agent any
 
     triggers {
-        // This tells Jenkins to listen for the GitHub Webhook trigger
+        // This tells Jenkins to listen for GitHub webhook triggers
         githubPush()
     }
 
@@ -24,21 +15,21 @@ pipeline {
         }
         stage('Test App') {
             steps {
-                // This tells Maven to compile and execute our unit test
+                // Run Maven unit tests (if you have pom.xml)
                 sh 'mvn clean test'
             }
         }
-		stage('Build') {
+        stage('Build') {
             steps {
+                // Compile your Java file
                 sh 'javac HelloWorld.java'
             }
         }
         stage('Run') {
             steps {
+                // Execute the compiled program
                 sh 'java HelloWorld'
             }
         }
     }
 }
-
-
