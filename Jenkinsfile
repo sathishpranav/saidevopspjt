@@ -7,6 +7,15 @@ pipeline {
     }
 
     stages {
+        stage('Checkpipeline {
+    agent any
+
+    triggers {
+        // This tells Jenkins to listen for the GitHub Webhook trigger
+        githubPush()
+    }
+
+    stages {
         stage('Checkout Code') {
             steps {
                 // Jenkins automatically pulls the code that triggered the webhook
@@ -19,6 +28,17 @@ pipeline {
                 sh 'mvn clean test'
             }
         }
+		stage('Build') {
+            steps {
+                sh 'javac HelloWorld.java'
+            }
+        }
+        stage('Run') {
+            steps {
+                sh 'java HelloWorld'
+            }
+        }
     }
 }
+
 
