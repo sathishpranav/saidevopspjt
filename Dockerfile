@@ -1,5 +1,12 @@
-FROM openjdk:17-jdk-slim
+
+# Use the official Eclipse Temurin Java 17 image
+FROM eclipse-temurin:17-jdk-alpine
+
 WORKDIR /app
-# Copy the compiled .class file into the container
+
+# Copy your compiled HelloWorld class file into the container
 COPY HelloWorld.class /app/
+
+# Command to run the application
 CMD ["java", "HelloWorld"]
+
