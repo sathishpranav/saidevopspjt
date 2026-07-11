@@ -31,5 +31,12 @@ pipeline {
                 sh 'java HelloWorld'
             }
         }
+	stage('Docker Package') {
+            steps {
+                // Build the Docker image using the Dockerfile in your repo
+                sh 'docker build -t helloworld-app:latest .'
+            }
+        }
     }
 }
+
