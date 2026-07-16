@@ -1,50 +1,49 @@
-
 pipeline {
     agent any
 
+    triggers {
+        // This makes Jenkins run automatically when you push to GitHub
+        githubPush()
+    }
+
     stages {
-        stage('Build') {
+        stage('Step 1: Checkout Code') {
             steps {
-                // Compile your Java file
+                checkout scm
+            }
+        }
+
+        stage('Step 2: Build & Compile') {
+            steps {
                 sh 'javac HelloWorld.java'
             }
         }
 
-        stage('Run') {
+        stage('Step 3: SonarQube Analysis') {
             steps {
-                // Execute the compiled program
-                sh 'java HelloWorld'
-            }
-        }
-
-        stage('Docker Package') {
-            steps {
-                // Build the Docker image using the Dockerfile in your repo
-                sh 'docker build -t helloworld-app:latest .'
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            environment {
-                scannerHome = tool 'SonarQubeScanner'   // Jenkins tool name
-            }
-            steps {
-                withSonarQubeEnv('MySonarQubeServer') { // Jenkins SonarQube server config name
-                    sh "${scannerHome}/bin/sonar-scanner \
-                        -Dsonar.projectKey=helloworld-app \
+                withSonarQubeEnv('SonarQube') {
+                    sh '''
+                        sonar-scanner \
+                        -Dsonar.projectKey=saidevopspjt \
+                        -Dsonar.projectName=saidevopspjt \
                         -Dsonar.sources=. \
                         -Dsonar.java.binaries=. \
-                        -Dsonar.host.url=http://localhost:9000 \
-                        -Dsonar.login=squ_b442879708de3b13108e324b43c6c1df173909bb
+                        -Dsonar.host.url=http://192.168.1.9:9000 \
+                        -Dsonar.login=yourGeneratedTokenHere
+                    '''
                 }
             }
         }
 
-        stage('Quality Gate') {
+        stage('Step 4: Package JAR File') {
             steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
-                }
+                sh 'jar cfe HelloWorld.jar HelloWorld HelloWorld.class'
+            }
+        }
+
+        stage('Step 5: Docker Package') {
+            steps {
+                sh 'docker build -t helloworld-app:latest .'
             }
         }
     }
